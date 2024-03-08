@@ -8,10 +8,20 @@ pdf_original = "C:/Projetos/horasMPS/LeitorPDF/pdfteste.pdf"
 pdf_modificado = "C:/Projetos/horasMPS/LeitorPDF/pdfteste_modificado.pdf"
 
 pdf_temp = "temp.pdf"
-ano = datetime.now().year
-mes = datetime.now().month
 
-print(f"Mês corrente: {mes}, Ano corrente: {ano}\n")
+def get_input_date(mensagem, minimo, maximo):
+    while True:
+        try:
+            valor = int(input(mensagem))
+            if minimo <= valor <= maximo:
+                return valor
+            else:
+                print(f"Por favor, digite um número entre {minimo} e {maximo}.")
+        except ValueError:
+            print("Por favor, digite um número inteiro.")
+
+ano = get_input_date("Digite o ano para o qual deseja preencher a folha de ponto (ex: 2024): ", 1900, 2100)
+mes = get_input_date("Digite o mês para o qual deseja preencher a folha de ponto (1-12): ", 1, 12)
 
 def perguntar_ferias():
     while True:
@@ -38,7 +48,7 @@ def get_input_int(mensagem, minimo=0, maximo=59):
         except ValueError:
             print("Por favor, digite um número inteiro.")
 
-hora_entrada_inicio = get_input_int("Digite a hora de início para o intervalo de entrada (ex: 8 para 08:00): ", 0, 23)
+hora_entrada_inicio = get_input_int("\nDigite a hora de início para o intervalo de entrada (ex: 8 para 08:00): ", 0, 23)
 minuto_entrada_inicio = get_input_int("Digite o minuto de início para o intervalo de entrada (ex: 1 para 08:01): ", 0, 59)
 
 hora_entrada_fim = get_input_int("Digite a hora de fim para o intervalo de entrada (ex: 9 para 09:00): ", hora_entrada_inicio, 23)
