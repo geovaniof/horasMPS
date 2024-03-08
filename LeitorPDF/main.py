@@ -11,18 +11,21 @@ pdf_temp = "temp.pdf"
 ano = datetime.now().year
 mes = datetime.now().month
 
-print(f"Mês corrente: {mes}, Ano corrente: {ano}")
+print(f"Mês corrente: {mes}, Ano corrente: {ano}\n")
 
 def perguntar_ferias():
-    esta_de_ferias = input("O colaborador está de férias? (sim/não): ").lower()
-    if esta_de_ferias == 'sim':
-        inicio_ferias = input("Digite a data de início das férias (DD/MM/YYYY): ")
-        duracao_ferias = int(input("Quantos dias de férias? "))
-        inicio_ferias = datetime.strptime(inicio_ferias, "%d/%m/%Y").date()
-        fim_ferias = inicio_ferias + timedelta(days=duracao_ferias)
-        return inicio_ferias, fim_ferias
-    else:
-        return None, None
+    while True:
+        esta_de_ferias = input("O colaborador teve ferias esse mês? (sim/não): ").lower()
+        if esta_de_ferias in ['sim', 's']:
+            inicio_ferias = input("Digite a data de início das férias (DD/MM/YYYY): ")
+            duracao_ferias = int(input("Quantos dias de férias? "))
+            inicio_ferias = datetime.strptime(inicio_ferias, "%d/%m/%Y").date()
+            fim_ferias = inicio_ferias + timedelta(days=duracao_ferias)
+            return inicio_ferias, fim_ferias
+        elif esta_de_ferias in ['não', 'nao', 'n']:
+            return None, None
+        else:
+            print("Por favor, responda com 'sim' ou 'não'.")
 
 def get_input_int(mensagem, minimo=0, maximo=59):
     while True:
@@ -41,7 +44,7 @@ minuto_entrada_inicio = get_input_int("Digite o minuto de início para o interva
 hora_entrada_fim = get_input_int("Digite a hora de fim para o intervalo de entrada (ex: 9 para 09:00): ", hora_entrada_inicio, 23)
 minuto_entrada_fim = get_input_int("Digite o minuto de fim para o intervalo de entrada (ex: 9 para 08:09): ", minuto_entrada_inicio if hora_entrada_fim == hora_entrada_inicio else 0, 59)
 
-posicao_x_entrada = int(input("Digite a posição no eixo X para o horário de entrada (ex: 117): "))
+posicao_x_entrada = int(input("\nDigite a posição no eixo X para o horário de entrada (ex: 117): "))
 posicao_x_saida = int(input("Digite a posição no eixo X para o horário de saída (ex: 305): "))
 
 inicio = datetime(100, 1, 1, hora_entrada_inicio, minuto_entrada_inicio)
@@ -105,4 +108,4 @@ for i in range(1, len(reader_original.pages)):
 with open(pdf_modificado, "wb") as output_pdf:
     writer.write(output_pdf)
 
-print(f"PDF modificado salvo em: {pdf_modificado}")
+print(f"\nPDF modificado salvo em: {pdf_modificado}")
