@@ -8,8 +8,10 @@ pdf_original = "C:/Projetos/horasMPS/LeitorPDF/pdfteste.pdf"
 pdf_modificado = "C:/Projetos/horasMPS/LeitorPDF/pdfteste_modificado.pdf"
 
 pdf_temp = "temp.pdf"
-ano = 2024
-mes = 3  
+ano = datetime.now().year
+mes = datetime.now().month
+
+print(f"Mês corrente: {mes}, Ano corrente: {ano}")
 
 def perguntar_ferias():
     esta_de_ferias = input("O colaborador está de férias? (sim/não): ").lower()
@@ -22,10 +24,25 @@ def perguntar_ferias():
     else:
         return None, None
 
-hora_entrada_inicio = int(input("Digite a hora de início para o intervalo de entrada (ex: 8 para 08:00): "))
-minuto_entrada_inicio = int(input("Digite o minuto de início para o intervalo de entrada (ex: 1 para 08:01): "))
-hora_entrada_fim = int(input("Digite a hora de fim para o intervalo de entrada (ex: 9 para 09:00): "))
-minuto_entrada_fim = int(input("Digite o minuto de fim para o intervalo de entrada (ex: 9 para 08:09): "))
+def get_input_int(mensagem, minimo=0, maximo=59):
+    while True:
+        try:
+            valor = int(input(mensagem))
+            if minimo <= valor <= maximo:
+                return valor
+            else:
+                print(f"Por favor, digite um número entre {minimo} e {maximo}.")
+        except ValueError:
+            print("Por favor, digite um número inteiro.")
+
+hora_entrada_inicio = get_input_int("Digite a hora de início para o intervalo de entrada (ex: 8 para 08:00): ", 0, 23)
+minuto_entrada_inicio = get_input_int("Digite o minuto de início para o intervalo de entrada (ex: 1 para 08:01): ", 0, 59)
+
+hora_entrada_fim = get_input_int("Digite a hora de fim para o intervalo de entrada (ex: 9 para 09:00): ", hora_entrada_inicio, 23)
+minuto_entrada_fim = get_input_int("Digite o minuto de fim para o intervalo de entrada (ex: 9 para 08:09): ", minuto_entrada_inicio if hora_entrada_fim == hora_entrada_inicio else 0, 59)
+
+posicao_x_entrada = int(input("Digite a posição no eixo X para o horário de entrada (ex: 117): "))
+posicao_x_saida = int(input("Digite a posição no eixo X para o horário de saída (ex: 305): "))
 
 inicio = datetime(100, 1, 1, hora_entrada_inicio, minuto_entrada_inicio)
 fim = datetime(100, 1, 1, hora_entrada_fim, minuto_entrada_fim)
@@ -67,10 +84,10 @@ for dia in range(1, total_dias_mes + 1):
 
     horario_entrada_sorteado = inicio + timedelta(minutes=minutos_aleatorios)
     horario_entrada_str = horario_entrada_sorteado.strftime("%H:%M")
-    c.drawString(117, altura_ajustada, horario_entrada_str)
+    c.drawString(posicao_x_entrada, altura_ajustada, horario_entrada_str)
 
     horario_saida = (horario_entrada_sorteado + timedelta(hours=10)).strftime("%H:%M")
-    c.drawString(305, altura_ajustada, horario_saida)
+    c.drawString(posicao_x_saida, altura_ajustada, horario_saida)
 
 c.save()
 
