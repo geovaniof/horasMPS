@@ -4,8 +4,8 @@ from datetime import datetime, timedelta
 import holidays, random
 from PyPDF2 import PdfReader, PdfWriter
 
-pdf_original = "C:/Projetos/LeitorPDF/pdfteste.pdf"
-pdf_modificado = "C:/Projetos/LeitorPDF/pdfteste_modificado.pdf"
+pdf_original = "C:/Projetos/horasMPS/LeitorPDF/pdfteste.pdf"
+pdf_modificado = "C:/Projetos/horasMPS/LeitorPDF/pdfteste_modificado.pdf"
 
 pdf_temp = "temp.pdf"
 ano = 2024
@@ -27,14 +27,10 @@ minuto_entrada_inicio = int(input("Digite o minuto de início para o intervalo d
 hora_entrada_fim = int(input("Digite a hora de fim para o intervalo de entrada (ex: 9 para 09:00): "))
 minuto_entrada_fim = int(input("Digite o minuto de fim para o intervalo de entrada (ex: 9 para 08:09): "))
 
-if hora_entrada_inicio == hora_entrada_fim and minuto_entrada_inicio > minuto_entrada_fim:
-    minuto_entrada_fim = minuto_entrada_inicio
+inicio = datetime(100, 1, 1, hora_entrada_inicio, minuto_entrada_inicio)
+fim = datetime(100, 1, 1, hora_entrada_fim, minuto_entrada_fim)
 
-hora_entrada_inicio_str = f"{hora_entrada_inicio:02d}"
-hora_entrada_fim_str = f"{hora_entrada_fim:02d}"
-
-minuto_entrada = random.randint(minuto_entrada_inicio, minuto_entrada_fim)
-minuto_entrada_str = f"{minuto_entrada:02d}"
+diferenca_total_minutos = int((fim - inicio).total_seconds() / 60)
 
 inicio_ferias, fim_ferias = perguntar_ferias()
 
@@ -58,24 +54,22 @@ nao_uteis_contados = 0
 
 for dia in range(1, total_dias_mes + 1):
     data_atual = datetime(ano, mes, dia).date()
-
+    
     if data_atual.weekday() >= 5 or data_atual in feriados_br or (inicio_ferias and inicio_ferias <= data_atual <= fim_ferias):
         nao_uteis_contados += 1
         if data_atual.weekday() == 4 and (data_atual + timedelta(days=1)) in feriados_br:
             nao_uteis_contados += 2  
-        continue 
-
+        continue
+    
     altura_ajustada = altura_atual - (dia - 1 - nao_uteis_contados) * altura_por_linha - nao_uteis_contados * espaco_extra_sabado_domingo_feriado
-    minuto_entrada = random.randint(1, 9)
+    
+    minutos_aleatorios = random.randint(0, diferenca_total_minutos)
 
-    hora_entrada = random.randint(hora_entrada_inicio, hora_entrada_fim)
-    minuto_entrada = random.randint(minuto_entrada_inicio, minuto_entrada_fim)
-    horario_entrada = datetime.strptime(f"{hora_entrada:02d}:{minuto_entrada:02d}", "%H:%M")
-
-    horario_entrada_str = horario_entrada.strftime("%H:%M")
+    horario_entrada_sorteado = inicio + timedelta(minutes=minutos_aleatorios)
+    horario_entrada_str = horario_entrada_sorteado.strftime("%H:%M")
     c.drawString(117, altura_ajustada, horario_entrada_str)
 
-    horario_saida = (horario_entrada + timedelta(hours=10)).strftime("%H:%M")
+    horario_saida = (horario_entrada_sorteado + timedelta(hours=10)).strftime("%H:%M")
     c.drawString(305, altura_ajustada, horario_saida)
 
 c.save()
