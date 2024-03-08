@@ -54,10 +54,6 @@ diferenca_total_minutos = int((fim - inicio).total_seconds() / 60)
 
 inicio_ferias, fim_ferias = perguntar_ferias()
 
-pdf_temp = "temp.pdf"
-ano = 2024
-mes = 3
-
 feriados_br = holidays.Brazil(years=ano)
 primeiro_dia_mes = datetime(ano, mes, 1)
 total_dias_mes = (primeiro_dia_mes.replace(month=primeiro_dia_mes.month % 12 + 1) - primeiro_dia_mes).days
