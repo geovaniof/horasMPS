@@ -4,7 +4,13 @@ from datetime import datetime, timedelta
 import holidays, random
 from PyPDF2 import PdfReader, PdfWriter
 
-pdf_original = "C:/Projetos/horasMPS/LeitorPDF/pdfteste.pdf"
+while True:
+    pdf_original = input("Digite o caminho completo do arquivo PDF de horas (ex: C:/CaminhoExemplo/horas.pdf): ")
+    if pdf_original.endswith('.pdf'):
+        break
+    else:
+        print("Por favor, forneça um caminho de arquivo válido com a extensão .pdf.")
+
 pdf_modificado = "C:/Projetos/horasMPS/LeitorPDF/pdfteste_modificado.pdf"
 
 pdf_temp = "temp.pdf"
