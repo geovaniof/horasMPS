@@ -6,13 +6,13 @@ from PyPDF2 import PdfReader, PdfWriter
 import params
 
 while True:
-    pdf_original = input("Digite o caminho completo do arquivo PDF de horas (ex: C:/CaminhoExemplo/horas.pdf): ")
+    pdf_original = params.caminho_pdf_original
     if pdf_original.endswith('.pdf'):
         break
     else:
         print("Por favor, forneça um caminho de arquivo válido com a extensão .pdf.")
 
-pdf_modificado = "C:/Projetos/horasMPS/LeitorPDF/pdfteste_modificado.pdf"
+pdf_modificado = params.caminho_pdf_modificado
 pdf_temp = "temp.pdf"
 
 feriados_br = holidays.Brazil(years=params.ano)
