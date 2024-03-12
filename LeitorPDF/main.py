@@ -3,6 +3,7 @@ from reportlab.lib.pagesizes import letter
 from datetime import datetime, timedelta
 import holidays, random
 from PyPDF2 import PdfReader, PdfWriter
+import params
 
 while True:
     pdf_original = input("Digite o caminho completo do arquivo PDF de horas (ex: C:/CaminhoExemplo/horas.pdf): ")
@@ -12,67 +13,17 @@ while True:
         print("Por favor, forneça um caminho de arquivo válido com a extensão .pdf.")
 
 pdf_modificado = "C:/Projetos/horasMPS/LeitorPDF/pdfteste_modificado.pdf"
-
 pdf_temp = "temp.pdf"
 
-def get_input_date(mensagem, minimo, maximo):
-    while True:
-        try:
-            valor = int(input(mensagem))
-            if minimo <= valor <= maximo:
-                return valor
-            else:
-                print(f"Por favor, digite um número entre {minimo} e {maximo}.")
-        except ValueError:
-            print("Por favor, digite um número inteiro.")
-
-ano = get_input_date("Digite o ano para o qual deseja preencher a folha de ponto (ex: 2024): ", 1900, 2100)
-mes = get_input_date("Digite o mês para o qual deseja preencher a folha de ponto (1-12): ", 1, 12)
-
-def perguntar_ferias():
-    while True:
-        esta_de_ferias = input("O colaborador teve ferias esse mês? (sim/não): ").lower()
-        if esta_de_ferias in ['sim', 's']:
-            inicio_ferias = input("Digite a data de início das férias (DD/MM/YYYY): ")
-            duracao_ferias = int(input("Quantos dias de férias? "))
-            inicio_ferias = datetime.strptime(inicio_ferias, "%d/%m/%Y").date()
-            fim_ferias = inicio_ferias + timedelta(days=duracao_ferias)
-            return inicio_ferias, fim_ferias
-        elif esta_de_ferias in ['não', 'nao', 'n']:
-            return None, None
-        else:
-            print("Por favor, responda com 'sim' ou 'não'.")
-
-def get_input_int(mensagem, minimo=0, maximo=59):
-    while True:
-        try:
-            valor = int(input(mensagem))
-            if minimo <= valor <= maximo:
-                return valor
-            else:
-                print(f"Por favor, digite um número entre {minimo} e {maximo}.")
-        except ValueError:
-            print("Por favor, digite um número inteiro.")
-
-hora_entrada_inicio = get_input_int("\nDigite a hora de início para o intervalo de entrada (ex: 8 para 08:00): ", 0, 23)
-minuto_entrada_inicio = get_input_int("Digite o minuto de início para o intervalo de entrada (ex: 1 para 08:01): ", 0, 59)
-
-hora_entrada_fim = get_input_int("Digite a hora de fim para o intervalo de entrada (ex: 9 para 09:00): ", hora_entrada_inicio, 23)
-minuto_entrada_fim = get_input_int("Digite o minuto de fim para o intervalo de entrada (ex: 9 para 08:09): ", minuto_entrada_inicio if hora_entrada_fim == hora_entrada_inicio else 0, 59)
-
-posicao_x_entrada = int(input("\nDigite a posição no eixo X para o horário de entrada (ex: 117): "))
-posicao_x_saida = int(input("Digite a posição no eixo X para o horário de saída (ex: 305): "))
-
-inicio = datetime(100, 1, 1, hora_entrada_inicio, minuto_entrada_inicio)
-fim = datetime(100, 1, 1, hora_entrada_fim, minuto_entrada_fim)
-
-diferenca_total_minutos = int((fim - inicio).total_seconds() / 60)
-
-inicio_ferias, fim_ferias = perguntar_ferias()
-
-feriados_br = holidays.Brazil(years=ano)
-primeiro_dia_mes = datetime(ano, mes, 1)
+feriados_br = holidays.Brazil(years=params.ano)
+primeiro_dia_mes = datetime(params.ano, params.mes, 1)
 total_dias_mes = (primeiro_dia_mes.replace(month=primeiro_dia_mes.month % 12 + 1) - primeiro_dia_mes).days
+
+inicio_ferias = None
+fim_ferias = None
+if params.esta_de_ferias.lower() == 's':
+    inicio_ferias = datetime.strptime(params.ferias_inicio, "%d/%m/%Y").date()
+    fim_ferias = inicio_ferias + timedelta(days=params.ferias_duracao)
 
 altura_inicial = 666
 altura_por_linha = 14.73
@@ -85,7 +36,7 @@ altura_atual = altura_inicial
 nao_uteis_contados = 0  
 
 for dia in range(1, total_dias_mes + 1):
-    data_atual = datetime(ano, mes, dia).date()
+    data_atual = datetime(params.ano, params.mes, dia).date()
     
     if data_atual.weekday() >= 5 or data_atual in feriados_br or (inicio_ferias and inicio_ferias <= data_atual <= fim_ferias):
         nao_uteis_contados += 1
@@ -95,14 +46,17 @@ for dia in range(1, total_dias_mes + 1):
     
     altura_ajustada = altura_atual - (dia - 1 - nao_uteis_contados) * altura_por_linha - nao_uteis_contados * espaco_extra_sabado_domingo_feriado
     
+    inicio = datetime(100, 1, 1, params.hora_entrada_inicio, params.minuto_entrada_inicio)
+    fim = datetime(100, 1, 1, params.hora_entrada_fim, params.minuto_entrada_fim)
+    diferenca_total_minutos = int((fim - inicio).total_seconds() / 60)
     minutos_aleatorios = random.randint(0, diferenca_total_minutos)
 
     horario_entrada_sorteado = inicio + timedelta(minutes=minutos_aleatorios)
     horario_entrada_str = horario_entrada_sorteado.strftime("%H:%M")
-    c.drawString(posicao_x_entrada, altura_ajustada, horario_entrada_str)
+    c.drawString(params.eixo_x_entrada, altura_ajustada, horario_entrada_str)
 
     horario_saida = (horario_entrada_sorteado + timedelta(hours=10)).strftime("%H:%M")
-    c.drawString(posicao_x_saida, altura_ajustada, horario_saida)
+    c.drawString(params.eixo_x_saida, altura_ajustada, horario_saida)
 
 c.save()
 
