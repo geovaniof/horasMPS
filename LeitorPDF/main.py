@@ -4,6 +4,26 @@ from datetime import datetime, timedelta
 import holidays, random
 from PyPDF2 import PdfReader, PdfWriter
 import params
+from PIL import Image, ImageEnhance
+
+assinatura_imagem_path = params.caminho_imagem_assinatura
+
+img = Image.open(assinatura_imagem_path)
+img = img.convert("RGBA")
+datas = img.getdata()
+nova_imagem_data = [(255, 255, 255, 0) if item[:3] == (255, 255, 255) else item for item in datas]
+img.putdata(nova_imagem_data)
+
+enhancer = ImageEnhance.Contrast(img)
+img = enhancer.enhance(2)  
+
+enhancer = ImageEnhance.Color(img)
+img = enhancer.enhance(2)  
+
+assinatura_imagem_transparente = "assinatura_transparente.png"
+img.save(assinatura_imagem_transparente)
+
+assinatura_imagem = assinatura_imagem_transparente
 
 while True:
     pdf_original = params.caminho_pdf_original
@@ -33,7 +53,7 @@ c = canvas.Canvas(pdf_temp, pagesize=letter)
 c.setFont("Helvetica", 10)  
 
 altura_atual = altura_inicial
-nao_uteis_contados = 0  
+nao_uteis_contados = 0 
 
 for dia in range(1, total_dias_mes + 1):
     data_atual = datetime(params.ano, params.mes, dia).date()
@@ -57,6 +77,12 @@ for dia in range(1, total_dias_mes + 1):
 
     horario_saida = (horario_entrada_sorteado + timedelta(hours=10)).strftime("%H:%M")
     c.drawString(params.eixo_x_saida, altura_ajustada, horario_saida)
+
+    posicao_x_assinatura = params.posicao_x_assinatura  
+    largura_assinatura = params.largura_assinatura  
+    altura_assinatura = params.altura_assinatura
+
+    c.drawImage(assinatura_imagem, posicao_x_assinatura, altura_ajustada, width=largura_assinatura, height=altura_assinatura)
 
 c.save()
 
