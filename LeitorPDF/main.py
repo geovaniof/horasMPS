@@ -45,6 +45,10 @@ if params.esta_de_ferias.lower() == 's':
     inicio_ferias = datetime.strptime(params.ferias_inicio, "%d/%m/%Y").date()
     fim_ferias = inicio_ferias + timedelta(days=params.ferias_duracao)
 
+dias_atestado = []
+if params.teve_atestado.lower() == 's':
+    dias_atestado = params.dias_atestado  
+
 altura_inicial = 666
 altura_por_linha = 14.73
 espaco_extra_sabado_domingo_feriado = 14  
@@ -58,14 +62,16 @@ nao_uteis_contados = 0
 for dia in range(1, total_dias_mes + 1):
     data_atual = datetime(params.ano, params.mes, dia).date()
     
-    if data_atual.weekday() >= 5 or data_atual in feriados_br or (inicio_ferias and inicio_ferias <= data_atual <= fim_ferias):
+    if data_atual.weekday() >= 5 or data_atual in feriados_br:
         nao_uteis_contados += 1
-        if data_atual.weekday() == 4 and (data_atual + timedelta(days=1)) in feriados_br:
-            nao_uteis_contados += 2  
         continue
     
     altura_ajustada = altura_atual - (dia - 1 - nao_uteis_contados) * altura_por_linha - nao_uteis_contados * espaco_extra_sabado_domingo_feriado
     
+    if (inicio_ferias and inicio_ferias <= data_atual <= fim_ferias) or data_atual in dias_atestado:
+        altura_ajustada -= espaco_extra_sabado_domingo_feriado * 0.5
+        continue
+
     inicio = datetime(100, 1, 1, params.hora_entrada_inicio, params.minuto_entrada_inicio)
     fim = datetime(100, 1, 1, params.hora_entrada_fim, params.minuto_entrada_fim)
     diferenca_total_minutos = int((fim - inicio).total_seconds() / 60)

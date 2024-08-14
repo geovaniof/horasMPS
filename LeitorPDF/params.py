@@ -1,4 +1,5 @@
 import configparser
+from datetime import datetime
 
 config = configparser.ConfigParser()
 config.read('config.ini')
@@ -25,3 +26,9 @@ caminho_imagem_assinatura = config.get('configuracoes', 'caminho_imagem_assinatu
 posicao_x_assinatura = config.getint('configuracoes', 'posicao_x_assinatura')
 largura_assinatura = config.getint('configuracoes', 'largura_assinatura')
 altura_assinatura = config.getint('configuracoes', 'altura_assinatura')
+teve_atestado = config.get('configuracoes', 'teve_atestado', fallback='N')
+
+dias_atestado = []
+if teve_atestado.lower() == 's':
+    dias_atestado = config.get('configuracoes', 'dias_atestado', fallback='')
+    dias_atestado = [datetime.strptime(dia.strip(), "%d/%m/%Y").date() for dia in dias_atestado.split(',') if dia]
