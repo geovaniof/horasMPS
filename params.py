@@ -16,13 +16,28 @@ if esta_de_ferias.lower() == 's':
 
 eixo_x_entrada = config.getint('configuracoes', 'eixo_x_entrada')
 eixo_x_saida = config.getint('configuracoes', 'eixo_x_saida')
+
+eixo_x_6_entrada = config.getint('configuracoes', 'eixo_x_6_entrada')
+
 hora_entrada_inicio = config.getint('configuracoes', 'hora_entrada_inicio')
-minuto_entrada_inicio = config.getint('configuracoes', 'minuto_entrada_inicio')
 hora_entrada_fim = config.getint('configuracoes', 'hora_entrada_fim')
+minuto_entrada_inicio = config.getint('configuracoes', 'minuto_entrada_inicio')
 minuto_entrada_fim = config.getint('configuracoes', 'minuto_entrada_fim')
+
+hora_entrada_6_inicio = config.getint('configuracoes', 'hora_entrada_6_inicio')
+hora_entrada_6_fim = config.getint('configuracoes', 'hora_entrada_6_fim')
+minuto_entrada_6_inicio = config.getint('configuracoes', 'minuto_entrada_6_inicio')
+minuto_entrada_6_fim = config.getint('configuracoes', 'minuto_entrada_6_fim')
+
+hora_intervalo_entrada_6_inicio = config.getint('configuracoes', 'hora_intervalo_entrada_6_inicio')
+hora_intervalo_entrada_6_fim = config.getint('configuracoes', 'hora_intervalo_entrada_6_fim')
+minuto_intervalo_entrada_6_inicio = config.getint('configuracoes', 'minuto_intervalo_entrada_6_inicio')
+minuto_intervalo_entrada_6_fim = config.getint('configuracoes', 'minuto_intervalo_entrada_6_fim')
+
 caminho_pdf_original = config.get('configuracoes', 'caminho_pdf_original')
 caminho_pdf_modificado = config.get('configuracoes', 'caminho_pdf_modificado')
 caminho_imagem_assinatura = config.get('configuracoes', 'caminho_imagem_assinatura')
+caminho_imagem_white = config.get('configuracoes', 'caminho_imagem_white')
 posicao_x_assinatura = config.getint('configuracoes', 'posicao_x_assinatura')
 largura_assinatura = config.getint('configuracoes', 'largura_assinatura')
 altura_assinatura = config.getint('configuracoes', 'altura_assinatura')

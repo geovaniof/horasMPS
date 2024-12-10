@@ -5,9 +5,11 @@ import holidays, random
 from PyPDF2 import PdfReader, PdfWriter
 import params
 from PIL import Image, ImageEnhance
-
+ 
 assinatura_imagem_path = params.caminho_imagem_assinatura
-
+white_imagem_path = params.caminho_imagem_white
+sem = ("Segunda", "Terça", "Quarta", "Quinta", "Sexta", "Sábado", "Domingo")
+#Assinatura
 img = Image.open(assinatura_imagem_path)
 img = img.convert("RGBA")
 datas = img.getdata()
@@ -24,6 +26,24 @@ assinatura_imagem_transparente = "assinatura_transparente.png"
 img.save(assinatura_imagem_transparente)
 
 assinatura_imagem = assinatura_imagem_transparente
+#white
+img_W = Image.open(white_imagem_path)
+img_W = img_W.convert("RGBA")
+datas = img_W.getdata()
+nova_imagem_data = [(255, 255, 255, 0) if item[:3] == (255, 255, 255) else item for item in datas]
+img_W.putdata(nova_imagem_data)
+
+enhancer = ImageEnhance.Contrast(img_W)
+img_W = enhancer.enhance(2)  
+
+enhancer = ImageEnhance.Color(img_W)
+img_W = enhancer.enhance(2)  
+
+white_imagem_transparente = "white_transparente.png"
+img_W.save(white_imagem_transparente)
+
+white_imagem = white_imagem_transparente
+
 
 while True:
     pdf_original = params.caminho_pdf_original
@@ -61,7 +81,8 @@ nao_uteis_contados = 0
 
 for dia in range(1, total_dias_mes + 1):
     data_atual = datetime(params.ano, params.mes, dia).date()
-    
+
+
     if data_atual.weekday() >= 5 or data_atual in feriados_br:
         nao_uteis_contados += 1
         continue
@@ -71,9 +92,16 @@ for dia in range(1, total_dias_mes + 1):
     if (inicio_ferias and inicio_ferias <= data_atual <= fim_ferias) or data_atual in dias_atestado:
         altura_ajustada -= espaco_extra_sabado_domingo_feriado * 0.5
         continue
+    num = datetime(params.ano, params.mes, dia).weekday()
+    if (num == 4):
+        print(f"Tenha uma boa {sem[num]} {data_atual}=D")
+        intervalo_inicio  = datetime(100, 1, 1, params.hora_intervalo_entrada_6_inicio, params.minuto_intervalo_entrada_6_inicio)
+        inicio = datetime(100, 1, 1, params.hora_entrada_6_inicio, params.minuto_entrada_6_inicio)
+        fim = datetime(100, 1, 1, params.hora_entrada_6_fim, params.minuto_entrada_6_fim)
+    else:
+        inicio = datetime(100, 1, 1, params.hora_entrada_inicio, params.minuto_entrada_inicio)
+        fim = datetime(100, 1, 1, params.hora_entrada_fim, params.minuto_entrada_fim)
 
-    inicio = datetime(100, 1, 1, params.hora_entrada_inicio, params.minuto_entrada_inicio)
-    fim = datetime(100, 1, 1, params.hora_entrada_fim, params.minuto_entrada_fim)
     diferenca_total_minutos = int((fim - inicio).total_seconds() / 60)
     minutos_aleatorios = random.randint(0, diferenca_total_minutos)
 
@@ -82,11 +110,15 @@ for dia in range(1, total_dias_mes + 1):
     c.drawString(params.eixo_x_entrada, altura_ajustada, horario_entrada_str)
 
     horario_saida = (horario_entrada_sorteado + timedelta(hours=10)).strftime("%H:%M")
+    horario_entrada_sorteado = (intervalo_inicio + timedelta(hours=0)).strftime("%H:%M")
     c.drawString(params.eixo_x_saida, altura_ajustada, horario_saida)
-
     posicao_x_assinatura = params.posicao_x_assinatura  
     largura_assinatura = params.largura_assinatura  
     altura_assinatura = params.altura_assinatura
+    
+    if (num == 4):
+        c.drawImage(white_imagem, params.eixo_x_6_entrada, altura_ajustada, width=largura_assinatura, height=altura_assinatura)
+        c.drawString(params.eixo_x_6_entrada, altura_ajustada, horario_entrada_sorteado)
 
     c.drawImage(assinatura_imagem, posicao_x_assinatura, altura_ajustada, width=largura_assinatura, height=altura_assinatura)
 
